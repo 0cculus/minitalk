@@ -6,7 +6,7 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:13 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/14 12:56:41 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/14 13:45:34 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	ft_communicate(int pid, char c)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(300);
+		usleep(120);
 		current_bit++;
 	}
 }

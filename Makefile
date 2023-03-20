@@ -6,7 +6,7 @@
 #    By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/06 09:32:52 by brheaume          #+#    #+#              #
-#    Updated: 2023/03/09 13:37:57 by brheaume         ###   ########.fr        #
+#    Updated: 2023/03/20 15:39:16 by brheaume         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 SERVER_NAME = server
@@ -29,7 +29,14 @@ client:
 server:
 	$(CC) $(SSRC) $(LIBDIR)$(LIBFT) $(CFLAGS) $(SERVER_NAME)
 
+clean:
+	rm -f $(LIBDIR)*.o
+
+fclean: clean
+	rm -f $(SERVER_NAME) $(CLIENT_NAME)
+	rm -f $(LIBDIR)$(LIBFT)
+
 libft:
 	$(MAKE) -C $(LIBDIR)
 
-.PHONY: all libft client server
+.PHONY: all libft client server clean fclean
