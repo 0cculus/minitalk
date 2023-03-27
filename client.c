@@ -6,49 +6,100 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:13 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/14 13:45:34 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/27 13:50:21 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static void	ft_communicate(int pid, char c)
-{
-	int	current_bit;
+struct s_clinfo	g_info;
 
-	current_bit = 0;
-	while (current_bit < 8)
+/*static void	ft_communicate(int pid, char c)
+{
+	g_info.current_bit = 0;
+	while (g_info.current_bit < 8)
 	{
-		if (c & (1 << current_bit))
+		if (c & (1 << g_info.current_bit))
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
 		usleep(120);
-		current_bit++;
+		g_info.current_bit++;
 	}
 }
 
-static void	ft_gather_comm(int pid, char *src)
+static void	ft_gather_comm(void)
 {
-	int	i;
+	while (g_info.message[++g_info.i])
+		ft_communicate(g_info.spid, g_info.message[g_info.i]);
+	ft_communicate(g_info.spid, 0);
+}*/
 
-	i = -1;
-	while (src[++i])
-		ft_communicate(pid, src[i]);
-	ft_communicate(pid, 0);
+static void	ft_init(char **av)
+{
+	g_info.current_bit = 0;
+	g_info.i = -1;
+	if (ft_isstrdigit(av[1]))
+	{
+		g_info.message = av[2];
+		g_info.spid = ft_atoi(av[1]);
+	}
+	else
+	{
+		g_info.message = av[1];
+		g_info.spid = ft_atoi(av[2]);
+	}
+	g_info.length = ft_strlen(g_info.message);
+}
+
+static void	ft_sender(int signb, siginfo_t *server, void *unused)
+{
+	(void) unused;
+	(void) server;
+	if (signb == SIGUSR2)
+	{
+		ft_putendl_fd("sending", 1);
+		if (g_info.length)
+		{
+			if (g_info.message[g_info.i] & (1 << g_info.current_bit))
+				kill(g_info.spid, SIGUSR1);
+			else
+				kill(g_info.spid, SIGUSR2);
+			g_info.current_bit++;
+			if (g_info.current_bit == 8)
+			{
+				g_info.i++;
+				g_info.current_bit = 0;
+				g_info.length--;
+			}
+		}
+	}
+	else if (signb == SIGUSR1)
+	{
+		ft_putendl_fd("terminated", 1);
+		exit(EXIT_SUCCESS);
+	}
+	else if (signb == -1)
+		exit(EXIT_FAILURE);
 }
 
 int	main(int ac, char **av)
 {
-	char	*err_message;
+	struct sigaction	act;
+	char				*err_message;
 
 	err_message = "invalid amount of arguments, 3 needed\n";
+	act.sa_sigaction = &ft_sender;
+	act.sa_flags = SA_SIGINFO;
+	ft_init(av);
 	if (ac == 3)
 	{
-		if (ft_isstrdigit(av[1]))
-			ft_gather_comm(ft_atoi(av[1]), av[2]);
-		else
-			ft_gather_comm(ft_atoi(av[2]), av[1]);
+		sigaction(SIGUSR1, &act, NULL);
+		sigaction(SIGUSR2, &act, NULL);
+		kill(getpid(), SIGUSR2);
+		while (3)
+			pause();
+		//ft_gather_comm();
 	}
 	else
 		ft_putstr_fd(err_message, 1);

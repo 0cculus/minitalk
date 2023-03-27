@@ -6,7 +6,7 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:21 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/20 14:11:51 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/27 13:50:12 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,13 @@ static char	*ft_constructstr(char *src, int bit)
 		}
 	}
 	res[i] = c;
+	ft_xfree(src);
 	return (res);
 }
 
-static void ft_cleanserver(int *binairy, int *received)
+static void	ft_cleanserver(int *binairy, int *received)
 {
+	ft_putendl_fd("freedom", 1);
 	g_info.message = ft_xfree(g_info.message);
 	g_info.cpid = 0;
 	*binairy = 0;
@@ -54,7 +56,7 @@ static void	ft_receiver(int signb, siginfo_t *client, void *unused)
 	(void) unused;
 	if (!g_info.cpid)
 		g_info.cpid = client->si_pid;
-	else if (client->si_pid != g_info.cpid)
+	if (client->si_pid != g_info.cpid)
 		ft_cleanserver(&binairy, &received);
 	if (signb == SIGUSR1)
 		received |= (0x01 << binairy);
@@ -62,14 +64,17 @@ static void	ft_receiver(int signb, siginfo_t *client, void *unused)
 	if (binairy == 8)
 	{	
 		g_info.message = ft_constructstr(g_info.message, received);
-		if (received == 0)
+		if (!received)
 		{
+			kill(client->si_pid, SIGUSR1);
 			ft_putendl_fd(g_info.message, 1);
 			g_info.message = ft_xfree(g_info.message);
 		}
 		binairy = 0;
 		received = 0;
 	}
+	ft_putendl_fd("sending", 1);
+	kill(client->si_pid, SIGUSR2);
 }
 
 int	main(int ac, char **av)
@@ -89,6 +94,6 @@ int	main(int ac, char **av)
 		sigaction(SIGUSR1, &act, NULL);
 		sigaction(SIGUSR2, &act, NULL);
 		while (3)
-			;
+			pause();
 	}
 }
