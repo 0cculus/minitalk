@@ -6,7 +6,7 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:13 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/28 10:09:42 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/28 10:30:30 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static void	ft_sender(int signb, siginfo_t *server, void *unused)
 	else if (signb == SIGUSR2)
 	{
 		if (g_info.length >= 0
-			&& (g_info.message[g_info.i] & (0x01 << g_info.current_bit)))
+			&& (g_info.message[g_info.i] & (1 << g_info.current_bit)))
 			kill(g_info.spid, SIGUSR1);
 		else
 			kill(g_info.spid, SIGUSR2);

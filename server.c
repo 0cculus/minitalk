@@ -6,7 +6,7 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:21 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/28 10:04:06 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/28 10:30:49 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,21 +59,27 @@ static void	ft_receiver(int signb, siginfo_t *client, void *unused)
 	if (client->si_pid != g_info.cpid)
 		ft_cleanserver(&binairy, &received);
 	if (signb == SIGUSR1)
-		received |= (0x01 << binairy);
+	{
+		ft_putendl_fd("SIGUSR1", 1);
+		received |= (1 << binairy);
+	}
+	else
+		ft_putendl_fd("SIGUSR2", 1);
 	binairy++;
 	if (binairy == 8)
 	{	
 		if (!received)
 		{
-			kill(client->si_pid, SIGUSR1);
 			ft_putendl_fd(g_info.message, 1);
 			g_info.message = ft_xfree(g_info.message);
+			kill(client->si_pid, SIGUSR1);
 		}
 		else
 			g_info.message = ft_constructstr(g_info.message, received);
 		binairy = 0;
 		received = 0;
 	}
+	ft_putendl_fd("sending", 1);
 	kill(client->si_pid, SIGUSR2);
 }
 
