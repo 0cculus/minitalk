@@ -6,7 +6,7 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:13 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/28 10:30:30 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/28 10:36:53 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,11 +83,11 @@ int	main(int ac, char **av)
 	char				*err_message;
 
 	err_message = "invalid amount of arguments, 3 needed\n";
-	act.sa_sigaction = &ft_sender;
-	act.sa_flags = SA_SIGINFO;
-	ft_init(av);
 	if (ac == 3)
 	{
+		act.sa_sigaction = &ft_sender;
+		act.sa_flags = SA_SIGINFO;
+		ft_init(av);
 		sigaction(SIGUSR1, &act, NULL);
 		sigaction(SIGUSR2, &act, NULL);
 		kill(getpid(), SIGUSR2);
