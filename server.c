@@ -6,7 +6,7 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:21 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/27 13:50:12 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/28 10:04:06 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,17 +63,17 @@ static void	ft_receiver(int signb, siginfo_t *client, void *unused)
 	binairy++;
 	if (binairy == 8)
 	{	
-		g_info.message = ft_constructstr(g_info.message, received);
 		if (!received)
 		{
 			kill(client->si_pid, SIGUSR1);
 			ft_putendl_fd(g_info.message, 1);
 			g_info.message = ft_xfree(g_info.message);
 		}
+		else
+			g_info.message = ft_constructstr(g_info.message, received);
 		binairy = 0;
 		received = 0;
 	}
-	ft_putendl_fd("sending", 1);
 	kill(client->si_pid, SIGUSR2);
 }
 

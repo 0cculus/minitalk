@@ -6,7 +6,7 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:13 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/27 13:50:21 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/28 10:09:42 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static void	ft_gather_comm(void)
 static void	ft_init(char **av)
 {
 	g_info.current_bit = 0;
-	g_info.i = -1;
+	g_info.i = 0;
 	if (ft_isstrdigit(av[1]))
 	{
 		g_info.message = av[2];
@@ -56,28 +56,22 @@ static void	ft_sender(int signb, siginfo_t *server, void *unused)
 {
 	(void) unused;
 	(void) server;
-	if (signb == SIGUSR2)
-	{
-		ft_putendl_fd("sending", 1);
-		if (g_info.length)
-		{
-			if (g_info.message[g_info.i] & (1 << g_info.current_bit))
-				kill(g_info.spid, SIGUSR1);
-			else
-				kill(g_info.spid, SIGUSR2);
-			g_info.current_bit++;
-			if (g_info.current_bit == 8)
-			{
-				g_info.i++;
-				g_info.current_bit = 0;
-				g_info.length--;
-			}
-		}
-	}
-	else if (signb == SIGUSR1)
-	{
-		ft_putendl_fd("terminated", 1);
+	if (signb == SIGUSR1)
 		exit(EXIT_SUCCESS);
+	else if (signb == SIGUSR2)
+	{
+		if (g_info.length >= 0
+			&& (g_info.message[g_info.i] & (0x01 << g_info.current_bit)))
+			kill(g_info.spid, SIGUSR1);
+		else
+			kill(g_info.spid, SIGUSR2);
+		g_info.current_bit++;
+		if (g_info.current_bit == 8)
+		{
+			g_info.i++;
+			g_info.current_bit = 0;
+			g_info.length--;
+		}
 	}
 	else if (signb == -1)
 		exit(EXIT_FAILURE);
@@ -99,7 +93,6 @@ int	main(int ac, char **av)
 		kill(getpid(), SIGUSR2);
 		while (3)
 			pause();
-		//ft_gather_comm();
 	}
 	else
 		ft_putstr_fd(err_message, 1);
