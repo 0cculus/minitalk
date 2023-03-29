@@ -6,7 +6,7 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:13 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/28 10:36:53 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/29 11:10:04 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,10 @@ static void	ft_sender(int signb, siginfo_t *server, void *unused)
 	(void) unused;
 	(void) server;
 	if (signb == SIGUSR1)
+	{
+		ft_putendl_fd("message reception complete", 1);
 		exit(EXIT_SUCCESS);
+	}
 	else if (signb == SIGUSR2)
 	{
 		if (g_info.length >= 0
@@ -91,6 +94,8 @@ int	main(int ac, char **av)
 		sigaction(SIGUSR1, &act, NULL);
 		sigaction(SIGUSR2, &act, NULL);
 		kill(getpid(), SIGUSR2);
+		ft_putnbr_fd(getpid(), 1);
+		ft_putchar_fd('\n', 1);
 		while (3)
 			pause();
 	}
