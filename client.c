@@ -6,34 +6,13 @@
 /*   By: brheaume <marvin@42quebec.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 09:32:13 by brheaume          #+#    #+#             */
-/*   Updated: 2023/03/29 11:10:04 by brheaume         ###   ########.fr       */
+/*   Updated: 2023/03/29 12:53:19 by brheaume         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
 struct s_clinfo	g_info;
-
-/*static void	ft_communicate(int pid, char c)
-{
-	g_info.current_bit = 0;
-	while (g_info.current_bit < 8)
-	{
-		if (c & (1 << g_info.current_bit))
-			kill(pid, SIGUSR1);
-		else
-			kill(pid, SIGUSR2);
-		usleep(120);
-		g_info.current_bit++;
-	}
-}
-
-static void	ft_gather_comm(void)
-{
-	while (g_info.message[++g_info.i])
-		ft_communicate(g_info.spid, g_info.message[g_info.i]);
-	ft_communicate(g_info.spid, 0);
-}*/
 
 static void	ft_init(char **av)
 {
